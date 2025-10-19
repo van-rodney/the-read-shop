@@ -1,8 +1,10 @@
 import { useState } from "react";
 import Header from "./components/Header";
 import BookList from "./components/BookList";
+import BookCard from "./components/BookCard";
 import BookDetail from "./components/BookDetail";
-import { searchBooks } from "./utils/api";
+import { searchBooks, fetchWorkDetails, fetchBookByISBN } from "./utils/api";
+import featuredBooks from "./data/featuredBooks";
 
 function App() {
   const [books, setBooks] = useState([]);
@@ -32,31 +34,79 @@ function App() {
     }
   };
 
+    // Preload featured book details so modal opens instantly for featured items
+    useEffect(() => {
+      let mounted = true;
+      async function preload() {
+        try {
+          const promises = featuredBooks.map(async (b) => {
+            const workKey = b.key?.startsWith("/works/") ? b.key : b.key ? `/works/${b.key.replace('/works/', '')}` : null;
+            const work = workKey ? await fetchWorkDetails(workKey) : null;
+            const isbn = b.isbn?.[0] || (b.cover_edition_key ? b.cover_edition_key : null);
+            const isbnData = isbn ? await fetchBookByISBN(isbn) : null;
+            return { ...b, _details: { work, isbn: isbnData } };
+          });
+
+          const enriched = await Promise.all(promises);
+          if (mounted) {
+            // replace featuredBooks' objects in-place for simplicity
+            enriched.forEach((eb, i) => (featuredBooks[i] = eb));
+          }
+        } catch (err) {
+          // preload errors are non-fatal
+          console.error('preload featured failed', err);
+        }
+      }
+
+      preload();
+      return () => {
+        mounted = false;
+      };
+    }, []);
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
 
       {/* Hero / Search */}
-      <div className="text-center my-8">
-        <h2 className="text-3xl font-bold mb-2">Welcome to The Read Shop</h2>
-        <p className="text-gray-700 mb-4">your next favorite read</p>
-        <div className="relative w-full max-w-md mx-auto">
-          <input
-            type="text"
-            placeholder="Type book title or author"
-            className="w-full border border-gray-300 rounded-full py-2 px-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSearch();
-            }}
-          />
-          <span
-            className="absolute right-3 top-2 text-gray-400 text-lg cursor-pointer"
-            onClick={handleSearch}
-          >
-            🔍
-          </span>
+      <div className="flex justify-center my-10 px-4">
+        <div className="w-full max-w-3xl bg-gradient-to-r from-indigo-50 via-white to-indigo-50 rounded-2xl p-8 shadow-md">
+          <h2 className="text-3xl font-bold mb-2 text-center text-[#0f172a]">Welcome to The Read Shop</h2>
+          <p className="text-gray-600 mb-6 text-center">Find your next favorite read — quick and easy.</p>
+
+          <div className="relative w-full max-w-lg mx-auto">
+            <input
+              type="text"
+              placeholder="Type book title or author"
+              className="w-full border border-gray-200 rounded-full py-3 px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-indigo-300 shadow-sm"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearch();
+              }}
+            />
+            {searchQuery ? (
+              <button
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-200 text-gray-600 rounded-full w-9 h-9 flex items-center justify-center hover:bg-gray-300 shadow"
+                onClick={() => {
+                  setSearchQuery("");
+                  setBooks([]);
+                  setError("");
+                }}
+                aria-label="Clear search"
+              >
+                ✖
+              </button>
+            ) : (
+              <button
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-indigo-600 text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-indigo-700 shadow"
+                onClick={handleSearch}
+                aria-label="Search"
+              >
+                🔍
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -75,29 +125,34 @@ function App() {
         )}
 
         {/* Featured Books Section */}
-        <div className="text-center my-8">
-          <h3 className="text-xl font-semibold mb-4">Featured Books</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            {books && books.length > 0 ? (
-              books.slice(0, 4).map((b, i) => (
-                <div
-                  key={b.key || i}
-                  className="bg-white rounded shadow p-4 text-left overflow-hidden"
-                >
-                  <p className="font-bold text-sm truncate">{b.title}</p>
-                  <p className="text-xs text-gray-600">
-                    {b.author_name?.join(", ") || "Unknown Author"}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <>
-                <div className="bg-green-500 text-white py-20 font-bold">BOOK 1</div>
-                <div className="bg-yellow-400 text-white py-20 font-bold">BOOK 2</div>
-                <div className="bg-red-500 text-white py-20 font-bold">BOOK 3</div>
-                <div className="bg-blue-900 text-white py-20 font-bold">BOOK 4</div>
-              </>
-            )}
+        <div className="my-12">
+          <div className="max-w-4xl mx-auto text-center">
+            <h3 className="text-2xl font-semibold mb-2 text-[#0f172a]">Featured Books</h3>
+            <p className="text-gray-600 mb-6">Hand-picked selections just for you</p>
+          </div>
+
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {books && books.length > 0 ? (
+                books.slice(0, 4).map((b, i) => (
+                  <div
+                    key={b.key || i}
+                    className="bg-white rounded-lg shadow p-4 text-left overflow-hidden hover:shadow-lg transition"
+                  >
+                    <p className="font-bold text-sm truncate">{b.title}</p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      {b.author_name?.join(", ") || "Unknown Author"}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                featuredBooks.map((b) => (
+                  <div key={b.key} className="cursor-pointer">
+                    <BookCard book={b} onClick={setSelectedBook} />
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
 
@@ -108,8 +163,13 @@ function App() {
       </div>
 
       {/* Footer */}
-      <footer className="text-center text-gray-500 py-4">
-        ©2025 The Read Shop
+      <footer className="text-center text-gray-500 py-6 bg-gradient-to-t from-white to-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-3">
+            <p className="text-sm text-gray-600">©2025 The Read Shop</p>
+            <p className="text-sm text-gray-500">Built with ❤️ · Open Library API</p>
+          </div>
+        </div>
       </footer>
     </div>
   );

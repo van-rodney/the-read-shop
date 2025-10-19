@@ -21,3 +21,48 @@ export async function searchBooks(query) {
 }
 
 export default { searchBooks };
+
+/**
+ * Fetch work details from Open Library using the work key (e.g. '/works/OL12345W' or 'OL12345W')
+ */
+export async function fetchWorkDetails(workKey) {
+  if (!workKey) return null;
+  let key = workKey;
+  if (!key.startsWith("/")) {
+    // normalize if just the id was provided
+    if (!key.startsWith("/works/")) {
+      key = `/works/${key}`;
+    } else {
+      key = `/${key}`;
+    }
+  }
+
+  const url = `https://openlibrary.org${key}.json`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error('fetchWorkDetails error', err);
+    return null;
+  }
+}
+
+/**
+ * Fetch book data by ISBN using the Books API (returns the data object for the ISBN key)
+ */
+export async function fetchBookByISBN(isbn) {
+  if (!isbn) return null;
+  const key = `ISBN:${isbn}`;
+  const url = `https://openlibrary.org/api/books?bibkeys=${encodeURIComponent(key)}&format=json&jscmd=data`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data[key] || null;
+  } catch (err) {
+    console.error('fetchBookByISBN error', err);
+    return null;
+  }
+}

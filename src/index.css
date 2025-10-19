@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* App global styles */
+:root {
+	--bg-start: #f8fafc; /* slate-50 */
+	--bg-end: #eef2ff; /* indigo-50 */
+}
+
+html, body, #root {
+	height: 100%;
+}
+
+body {
+	font-family: 'Poppins', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	background: linear-gradient(180deg, var(--bg-start), var(--bg-end));
+	color: #0f172a;
+}
+
+/* Let components control text alignment; center the main container */
+#root {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 2rem 1rem;
+}
+
+/* Small utility for card backgrounds */
+.app-card {
+	background: white;
+	border-radius: .75rem;
+	box-shadow: 0 4px 14px rgba(12, 18, 36, 0.06);
+}
