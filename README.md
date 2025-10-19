@@ -43,4 +43,7 @@ npm install
 npm run dev
 
 # build for production
+HEAD
 npm run build
+npm run build
+ fdd17b9 (feat: complete Week 1 setup and Week 2 basic UI with API integration)
