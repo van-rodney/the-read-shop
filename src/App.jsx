@@ -2,11 +2,13 @@ import { useState } from "react";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import BookList from "./components/BookList";
+import BookDetail from "./components/BookDetail";
 import { searchBooks } from "./utils/api";
 
 function App() {
   const [books, setBooks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+    const [selectedBook, setSelectedBook] = useState(null);
 
   const handleSearch = async () => {
     if (!searchQuery) return;
@@ -23,7 +25,8 @@ function App() {
           setSearchQuery={setSearchQuery}
           handleSearch={handleSearch}
         />
-        <BookList books={books} />
+        <BookList books={books} onBookClick={setSelectedBook} />
+        {selectedBook && <BookDetail book={selectedBook} onClose={() => setSelectedBook(null)} />}
       </div>
     </div>
   );

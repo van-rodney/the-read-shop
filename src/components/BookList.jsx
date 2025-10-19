@@ -1,3 +1,5 @@
+import BookCard from "./BookCard";
+
 export default function BookList({ books }) {
   if (!books || books.length === 0) {
     return <p className="text-gray-500">No books found.</p>;
