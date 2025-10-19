@@ -6,10 +6,12 @@ export default function BookList({ books, onBookClick }) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {books.map((book) => (
-        <BookCard key={book.key} book={book} onClick={onBookClick} />
-      ))}
+    <div className="max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {books.map((book) => (
+          <BookCard key={book.key} book={book} onClick={onBookClick} />
+        ))}
+      </div>
     </div>
   );
 }
