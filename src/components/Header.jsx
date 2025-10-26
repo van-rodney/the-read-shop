@@ -1,12 +1,21 @@
-export default function Header() {
+import React from "react";
+import { Link } from "react-router-dom";
+import "./Header.css";
+
+function Header() {
   return (
-    <header className="bg-[#1B1464] text-white p-4 flex justify-between items-center">
-      <h1 className="text-xl font-bold">The Read Shop</h1>
-      <nav className="space-x-6">
-        <a href="#" className="hover:underline">Home</a>
-        <a href="#" className="hover:underline">Login</a>
-        <a href="#" className="hover:underline">About</a>
-      </nav>
-    </header>
+    <>
+      <header className="header">
+        <nav className="nav-links">
+          <Link to="/">Home</Link>
+          <Link to="/about">About</Link>
+          <Link to="/login">Login</Link>
+        </nav>
+      </header>
+
+      <div className="site-title">The Read Shop</div>
+    </>
   );
 }
+
+export default Header;

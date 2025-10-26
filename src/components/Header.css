@@ -1,40 +1,51 @@
 .header {
-  background: linear-gradient(to right, #0f172a, #1e3a8a); /* blue gradient */
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 60px;
-  padding: 0 2rem;
-  width: 100%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  margin: 0; /* ensure no outside margin */
-  position: relative;
-  left: 0;
-  right: 0;
+  position: fixed;
   top: 0;
-}
-
-.logo {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: white;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #1e3a8a; /* deep blue bar */
   display: flex;
+  justify-content: center;
   align-items: center;
+  color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
 .nav-links {
   display: flex;
-  gap: 1.5rem;
+  gap: 40px;
 }
 
 .nav-links a {
   color: white;
   text-decoration: none;
-  font-size: 0.95rem;
-  transition: color 0.3s ease;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 .nav-links a:hover {
-  color: #93c5fd; /* light blue hover */
+  color: #a5b4fc; /* light blue hover */
+}
+
+/* Title below header */
+.site-title {
+  margin-top: 80px; /* creates space below fixed header */
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  letter-spacing: 1px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-links {
+    gap: 20px;
+  }
+
+  .site-title {
+    font-size: 1.6rem;
+  }
 }
