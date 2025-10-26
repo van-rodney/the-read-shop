@@ -2,23 +2,21 @@ export default function BookCard({ book, onClick }) {
   const coverId = book.cover_i;
   const coverUrl = coverId
     ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`
-    : "https://via.placeholder.com/150x200?text=No+Cover";
+    : "https://via.placeholder.com/128x180?text=No+Cover";
 
   return (
     <div
       onClick={() => onClick(book)}
-      className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg cursor-pointer transition"
+      className="cursor-pointer p-4 bg-white shadow rounded hover:shadow-lg transition"
     >
-      <img src={coverUrl} alt={book.title} className="w-full h-64 object-cover" />
-      <div className="p-4">
-        <h3 className="font-semibold text-lg text-gray-800 truncate">{book.title}</h3>
-        <p className="text-sm text-gray-600">
-          {book.author_name?.join(", ") || "Unknown Author"}
-        </p>
-        <p className="text-sm text-gray-500">
-          {book.publisher?.[0] || "Unknown Publisher"}
-        </p>
-      </div>
+      <img src={coverUrl} alt={book.title} className="w-32 h-44 mx-auto mb-3 object-cover" />
+      <p className="font-semibold text-center">{book.title}</p>
+      <p className="text-gray-600 text-sm text-center">
+        {book.author_name?.join(", ") || "Unknown Author"}
+      </p>
+      <p className="text-gray-500 text-xs text-center">
+        {book.publisher ? book.publisher[0] : "Unknown Publisher"}
+      </p>
     </div>
   );
 }

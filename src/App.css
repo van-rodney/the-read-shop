@@ -7,6 +7,9 @@
   padding: 2rem;
   text-align: center;
 }
+body {
+  padding-top: 70px; /* Makes room for fixed header */
+}
 
 .logo {
   height: 6em;
